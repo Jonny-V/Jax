@@ -17,7 +17,7 @@ dd MBOOT_HEADER_FLAGS   ; GRUB 的一些加载时选项，其详细注释在定�
 dd MBOOT_CHECKSUM       ; 检测数值，其含义在定义处
 
 [GLOBAL start] 		; 内核代码入口，此处提供该声明给 ld 链接器
-[GLOBAL glb_mboot_ptr] 	; 全局的 struct multiboot * 变量
+[GLOBAL glbMbootPtr] 	; 全局的 struct multiboot * 变量
 [EXTERN kern_entry] 	; 声明内核 C 代码的入口函数
 
 start:
