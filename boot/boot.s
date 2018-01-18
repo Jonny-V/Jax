@@ -26,7 +26,7 @@ start:
 	mov esp, STACK_TOP  	 ; 设置内核栈地址
 	mov ebp, 0 		 ; 帧指针修改为 0
 	and esp, 0FFFFFFF0H	 ; 栈地址按照16字节对齐
-	mov [glb_mboot_ptr], ebx ; 将 ebx 中存储的指针存入全局变量
+	mov [glbMbootPtr], ebx ; 将 ebx 中存储的指针存入全局变量
 	call kern_entry		 ; 调用内核入口函数
 stop:
 	hlt 			 ; 停机指令，什么也不做，可以降低 CPU 功耗
@@ -35,7 +35,7 @@ stop:
 section .bss 			 ; 未初始化的数据段从这里开始
 stack:
 	resb 32768 	 	 ; 这里作为内核栈
-glb_mboot_ptr: 			 ; 全局的 multiboot 结构体指针
+glbMbootPtr: 			 ; 全局的 multiboot 结构体指针
 	resb 4
 
 STACK_TOP equ $-stack-1 	 ; 内核栈顶，$ 符指代是当前地址

@@ -18,7 +18,7 @@ CC = gcc
 LD = ld
 ASM = nasm
 
-C_FLAGS = -c -Wall -m32 -g -ggdb -gstabs+ -nostdinc -fno-builtin -fno-stack-protector -I include
+C_FLAGS = -c -Wall -m32 -ggdb -gstabs+ -nostdinc -fno-builtin -fno-stack-protector -I include
 LD_FLAGS = -T scripts/kernel.ld -m elf_i386 -nostdlib
 ASM_FLAGS = -f elf -g -F stabs
 
@@ -39,7 +39,7 @@ link:
 
 .PHONY:clean
 clean:
-	$(RM) $(S_OBJECTS) $(C_OBJECTS) Jax_kernel
+	$(RM) $(S_OBJECTS) $(./kernel/debug/printk.o) $(C_OBJECTS) Jax_kernel
 
 .PHONY:update_image
 update_image:
@@ -69,4 +69,3 @@ debug:
 	qemu -S -s -fda floppy.img -boot a &
 	sleep 1
 	cgdb -x scripts/gdbinit
-
