@@ -1,4 +1,4 @@
-file jax_kernel
+file Jax_kernel
 target remote :1234
 break kern_entry
 c
