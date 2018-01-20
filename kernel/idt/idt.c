@@ -12,6 +12,11 @@ struct idtPtr_t idtPtr;
 //中断处理函数的指针数组
 interruptHander_t interruptHander[256];
 
+void registerInterruptHander(unsigned char n, interruptHander_t h)
+{
+	interruptHander[n] = h;
+}
+
 void isrHander(struct ptRegs_t *regs)
 {
     if(interruptHander[regs->intNo])
@@ -19,6 +24,18 @@ void isrHander(struct ptRegs_t *regs)
     else
         printkWithColor(black, blue, "Unhandled interrupt: %d\n", regs->intNo);
 
+}
+
+void irqHander(struct ptRegs_t *regs)
+{
+	if(regs->intNo >= 40)
+		writeByte(0xA0, 0x20);
+	writeByte(0x20, 0x20);
+
+	if(interruptHander[regs->intNo])
+		interruptHander[regs->intNo](regs);
+	else
+		printkWithColor(black, blue, "Unhandled interrupt: %d\n", regs->intNo);
 }
 
 //设置中断描述符
@@ -36,6 +53,24 @@ extern void idtFlush(unsigned int);
 
 void initIdt()
 {
+	//两片级联的8259A芯片 主片端口0x20 0x21 从片端口0xA0 0xA1
+	//初始化主从片
+	writeByte(0x20, 0x11);
+	writeByte(0xA0, 0x11);
+	//设置主片IRQ从32号开始
+	writeByte(0x21, 0x20);
+	//设置从片IRQ从40号开始
+	writeByte(0xA1, 0x28);
+	//设置主片IR2引脚连接从片
+	writeByte(0x21, 0x04);
+	writeByte(0xA1, 0x02);
+	//设置主从片按照8086方式工作
+	writeByte(0x21, 0x01);
+	writeByte(0xA1, 0x01);
+	//设置主从片允许中断
+	writeByte(0x21, 0x00);
+	writeByte(0xA1, 0x00);
+
     bzero((unsigned char *)&interruptHander, sizeof(interruptHander_t) * 256);
     idtPtr.limit = sizeof(struct idtEntry_t) * 256 - 1;
     idtPtr.base = (unsigned int)&idtEntry;
@@ -75,6 +110,24 @@ void initIdt()
 	idtSetGate(29, (unsigned int)isr29, 0x08, 0x8E);
 	idtSetGate(30, (unsigned int)isr30, 0x08, 0x8E);
 	idtSetGate(31, (unsigned int)isr31, 0x08, 0x8E);
+
+	//interrupt request
+	idtSetGate(32, (unsigned int)irq0, 0x08, 0x8E);
+	idtSetGate(33, (unsigned int)irq1, 0x08, 0x8E);
+	idtSetGate(34, (unsigned int)irq2, 0x08, 0x8E);
+	idtSetGate(35, (unsigned int)irq3, 0x08, 0x8E);
+	idtSetGate(36, (unsigned int)irq4, 0x08, 0x8E);
+	idtSetGate(37, (unsigned int)irq5, 0x08, 0x8E);
+	idtSetGate(38, (unsigned int)irq6, 0x08, 0x8E);
+	idtSetGate(39, (unsigned int)irq7, 0x08, 0x8E);
+	idtSetGate(40, (unsigned int)irq8, 0x08, 0x8E);
+	idtSetGate(41, (unsigned int)irq9, 0x08, 0x8E);
+	idtSetGate(42, (unsigned int)irq10, 0x08, 0x8E);
+	idtSetGate(43, (unsigned int)irq11, 0x08, 0x8E);
+	idtSetGate(44, (unsigned int)irq12, 0x08, 0x8E);
+	idtSetGate(45, (unsigned int)irq13, 0x08, 0x8E);
+	idtSetGate(46, (unsigned int)irq14, 0x08, 0x8E);
+	idtSetGate(47, (unsigned int)irq15, 0x08, 0x8E);
 
 	// 255 将来用于实现系统调用
 	idtSetGate(255, (unsigned int)isr255, 0x08, 0x8E);
