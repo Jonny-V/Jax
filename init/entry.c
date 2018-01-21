@@ -2,6 +2,7 @@
 #include "debug.h"
 #include "gdt.h"
 #include "idt.h"
+#include "pmm.h"
 
 int kern_entry()
 {
@@ -13,9 +14,29 @@ int kern_entry()
   consoleClear();
   printk("Hello,Jax\n");
 
-  initTimer(200);
+  printk("kernel Strat: %08X, kernel End: %08X, Used: %dKB\n",
+          kernelStart, kernelEnd,
+          (kernelEnd - kernelStart + 1023) / 1024);
 
-  asm volatile("sti");
+  showMemoryMap();
+  initPmm();
+
+  printkWithColor(black, red, "\nThe Count of Physical Memory Page is: %u\n\n", phyPageCount);
+
+	unsigned  allc_addr = NULL;
+	printkWithColor(black, lightBrown, "Test Physical Memory Alloc :\n");
+	allc_addr = pmmAllocPage();
+	printkWithColor(black, lightBrown, "Alloc Physical Addr: %08X\n", allc_addr);
+	allc_addr = pmmAllocPage();
+	printkWithColor(black, lightBrown, "Alloc Physical Addr: %08X\n", allc_addr);
+	allc_addr = pmmAllocPage();
+	printkWithColor(black, lightBrown, "Alloc Physical Addr: %08X\n", allc_addr);
+	allc_addr = pmmAllocPage();
+	printkWithColor(black, lightBrown, "Alloc Physical Addr: %08X\n", allc_addr);
+
+  //initTimer(200);
+
+  //asm volatile("sti");
   
 
   //panic("Test");

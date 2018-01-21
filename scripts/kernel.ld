@@ -3,6 +3,7 @@ SECTIONS
 {
 	. = 0x100000;
 
+	PROVIDE(kernelStart = .);
 	.text :
 	{
 		*(.text)
@@ -29,6 +30,7 @@ SECTIONS
 		*(.stabstr)
 	 	. = ALIGN(4096);
 	}
+	PROVIDE(kernelEnd = .);
 	
 	/DISCARD/ : { *(.comment) *(.eh_frame) }
 }
